@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===== Base layer: nền tảng, font, selection, focus ===== */
+@layer base {
+  :root {
+    --ring: 0 0% 100%; /* placeholder */
+  }
+
+  html, body, #root { height: 100%; }
+
+  html {
+    /* mượt hơn khi cuộn, và tắt flicker trên mobile */
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100 antialiased;
+  }
+
+  /* Màu bôi chọn văn bản */
+  ::selection {
+    background: rgba(99, 102, 241, 0.2); /* indigo-500/20 */
+  }
+
+  /* Đường viền focus chung, thân thiện với keyboard */
+  :focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, .35); /* cyan-500/35 */
+    border-radius: .5rem;
+  }
+
+  /* Tôn trọng người dùng thích giảm chuyển động */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation: none !important;
+      transition: none !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ===== Components layer: nút, thẻ, input tái sử dụng ===== */
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-2xl font-medium transition;
+  }
+  .btn-primary {
+    @apply btn bg-slate-900 text-white hover:opacity-90 dark:bg-white dark:text-slate-900;
+  }
+  .btn-outline {
+    @apply btn border border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800;
+  }
+  .card {
+    @apply rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-sm;
+  }
+  .input {
+    @apply w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 outline-none focus:ring-2 ring-slate-300 dark:ring-slate-600;
+  }
+}
+
+/* ===== Utilities layer: scrollbar, container, helpers ===== */
+@layer utilities {
+  /* Scrollbar đẹp (WebKit) */
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, .6); /* slate-400/60 */
+    border-radius: 9999px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, .85);
+  }
+  .scrollbar-thin {
+    scrollbar-width: thin;               /* Firefox */
+    scrollbar-color: rgba(148,163,184,.6) transparent;
+  }
+
+  /* Wrapper container tiêu chuẩn */
+  .container-app {
+    @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+}
