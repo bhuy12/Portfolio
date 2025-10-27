@@ -189,7 +189,7 @@ function Gallery({ images }) {
         <Portal>
           <AnimatePresence>
             <motion.div
-              className="fixed inset-0 z-[99999] bg-black/70 backdrop-blur-sm grid place-items-center p-4"
+              className="fixed inset-0 bg-black/70 backdrop-blur-sm grid place-items-center p-4" style={{ zIndex: 2147483647, pointerEvents: 'auto' }}
               role="dialog"
               aria-modal="true"
               initial={{ opacity: 0 }}
