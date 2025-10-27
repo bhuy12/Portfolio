@@ -16,6 +16,7 @@ import {
   SunMedium,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { createPortal } from "react-dom";
 
 // ====== HỒ SƠ (theo CV) ======
 const AUTHOR = {
@@ -427,7 +428,8 @@ function ProjectCard({ project }) {
   );
 }
 
-/* Gallery: lưới thumbnail + modal xem ảnh lớn (hỗ trợ bàn phím) */
+/* Gallery: lưới thumbnail + modal xem ảnh lớn (hỗ trợ bàn phím) 
+   — ĐÃ FIX: Modal render qua portal để thoát khỏi stacking context */
 function Gallery({ images }) {
   const [open, setOpen] = React.useState(false);
   const [index, setIndex] = React.useState(0);
@@ -438,6 +440,7 @@ function Gallery({ images }) {
     setOpen(true);
   };
 
+  // Điều khiển bàn phím khi mở modal
   React.useEffect(() => {
     if (!open) return;
     const onKey = (e) => {
@@ -448,6 +451,16 @@ function Gallery({ images }) {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open, images.length]);
+
+  // Khoá scroll nền khi mở modal
+  React.useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
 
   return (
     <div>
@@ -468,54 +481,58 @@ function Gallery({ images }) {
         ))}
       </div>
 
-      <AnimatePresence>
-        {open ? (
-          <motion.div
-            className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm grid place-items-center p-4"
-            role="dialog"
-            aria-modal="true"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setOpen(false)}
-          >
+      {/* Portal để đảm bảo overlay luôn phủ toàn trang và không bị đè */}
+      {createPortal(
+        <AnimatePresence>
+          {open && (
             <motion.div
-              className="max-w-4xl w-full"
-              onClick={(e) => e.stopPropagation()}
-              initial={{ y: 10, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 10, opacity: 0 }}
+              className="fixed inset-0 z-[9999] bg-black/70 backdrop-blur-sm grid place-items-center p-4"
+              role="dialog"
+              aria-modal="true"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setOpen(false)}
             >
-              <img src={current} alt="preview-large" className="w-full max-h-[80vh] object-contain rounded-xl" />
-              <div className="mt-3 flex items-center justify-between text-slate-200 text-sm">
-                <span>
-                  {index + 1} / {images.length}
-                </span>
-                <div className="space-x-2">
-                  <button
-                    onClick={() => setIndex((p) => (p - 1 + images.length) % images.length)}
-                    className="px-3 py-1 rounded-lg bg-white/10 hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
-                  >
-                    Trước
-                  </button>
-                  <button
-                    onClick={() => setIndex((p) => (p + 1) % images.length)}
-                    className="px-3 py-1 rounded-lg bg-white/10 hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
-                  >
-                    Sau
-                  </button>
-                  <button
-                    onClick={() => setOpen(false)}
-                    className="px-3 py-1 rounded-lg bg-white/10 hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
-                  >
-                    Đóng
-                  </button>
+              <motion.div
+                className="max-w-4xl w-full"
+                onClick={(e) => e.stopPropagation()}
+                initial={{ y: 10, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 10, opacity: 0 }}
+              >
+                <img src={current} alt="preview-large" className="w-full max-h-[80vh] object-contain rounded-xl" />
+                <div className="mt-3 flex items-center justify-between text-slate-200 text-sm">
+                  <span>
+                    {index + 1} / {images.length}
+                  </span>
+                  <div className="space-x-2">
+                    <button
+                      onClick={() => setIndex((p) => (p - 1 + images.length) % images.length)}
+                      className="px-3 py-1 rounded-lg bg-white/10 hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
+                    >
+                      Trước
+                    </button>
+                    <button
+                      onClick={() => setIndex((p) => (p + 1) % images.length)}
+                      className="px-3 py-1 rounded-lg bg-white/10 hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
+                    >
+                      Sau
+                    </button>
+                    <button
+                      onClick={() => setOpen(false)}
+                      className="px-3 py-1 rounded-lg bg-white/10 hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
+                    >
+                      Đóng
+                    </button>
+                  </div>
                 </div>
-              </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   );
 }
