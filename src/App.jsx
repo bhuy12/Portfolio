@@ -21,7 +21,7 @@ import { createPortal } from "react-dom";
 // ====== HỒ SƠ (theo CV) ======
 const AUTHOR = {
   name: "Bùi Lê Đức Huy",
-  role: "Web Developer Intern",
+  role: "Software Developer",
   email: "bhuy1212@gmail.com",
   phone: "0707286901",
   dob: "11/11/2004",
