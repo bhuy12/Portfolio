@@ -43,7 +43,7 @@ const EDUCATION = {
   school: "Van Lang University",
   faculty: "Faculty of Electrical & Computer Engineering",
   years: "2022 – 2026",
-  gpa: "3.13/4.00",
+  gpa: "3.15/4.00",
 };
 
 const TECH_SKILLS = {
